@@ -15,6 +15,19 @@ import torch.optim as optim
 
 import sys
 
+seed = 2024
+deterministic = True
+
+import random
+import numpy as np
+random.seed(seed)
+np.random.seed(seed)
+torch.manual_seed(seed)
+torch.cuda.manual_seed_all(seed)
+if deterministic:
+	torch.backends.cudnn.deterministic = True
+	torch.backends.cudnn.benchmark = False
+
 # _path = os.path.dirname(__file__)
 _path = os.getcwd()
 _path = _path.split("/")[:-1]
@@ -93,7 +106,7 @@ parser.add_argument('--l2_loss_weight', default=0, type=float)
 parser.add_argument('--best_k', default=1, type=int)
 
 # Output
-parser.add_argument('--output_dir', default=os.getcwd() + '/output_noscene_3/5')
+parser.add_argument('--output_dir', default=os.getcwd() + '/output_noscene_3/240312')
 parser.add_argument('--print_every', default=5, type=int)
 parser.add_argument('--checkpoint_every', default=100, type=int)
 parser.add_argument('--checkpoint_name', default='ckpt_noscene_3')
