@@ -13,7 +13,19 @@ _path = "/".join(_path)
 print(f"_path:{_path}")
 
 sys.path.append(_path)
+seed = 2024
+deterministic = True
 
+import random
+import numpy as np
+random.seed(seed)
+np.random.seed(seed)
+torch.manual_seed(seed)
+torch.cuda.manual_seed_all(seed)
+if deterministic:
+	torch.backends.cudnn.deterministic = True
+	torch.backends.cudnn.benchmark = False
+    
 from mmt.data.loader import data_loader
 from mmt.losses import displacement_error, final_displacement_error
 
@@ -21,17 +33,21 @@ from mmt.models.mmt_noscene import TrajectoryGenerator # traffic model 불러오
 from mmt.utils import relative_to_abs, get_dset_path
 
 parser = argparse.ArgumentParser()
-parser.add_argument('--model_path', default=os.getcwd() + '/output_noscene_v1/5', type=str)
+parser.add_argument('--model_path', default=os.getcwd() + '/output_noscene/240312/t1', type=str)
+# parser.add_argument('--model_path', default=os.getcwd() + '/output_noscene_v1/state_v1/240315', type=str)
+# parser.add_argument('--model_path', default=os.getcwd() + '/output_noscene_v1/state_v4/240315', type=str)
+# parser.add_argument('--model_path', default=os.getcwd() + '/output_noscene_v1/state_v3/240315', type=str)
 parser.add_argument('--num_samples', default=20, type=int)
 parser.add_argument('--dset_type', default='test', type=str)
-parser.add_argument('--state_type', default=1, type=int) # v0: no state, v1: acc+speed_ang, v2: acc, v3: acc+ang, v4: speed
-
+# parser.add_argument('--state_type', default=2, type=int) # loaded model에서 불러옴 # v0: no state, v1: acc+speed_ang, v2: acc, v3: v+ang, v4: speed
+# parser.add_argument('--obs_len', default=8, type=int) # loader.py에서 설정
+parser.add_argument('--pred_len', default=8, type=int) 
 
 def get_generator(checkpoint):
     args = AttrDict(checkpoint['args'])
     generator = TrajectoryGenerator(
         obs_len=args.obs_len,
-        pred_len=args.pred_len,
+        pred_len= 8, # args.pred_len,
         state_type=args.state_type,
         embedding_dim=args.embedding_dim,
         encoder_h_dim=args.encoder_h_dim_g,
@@ -69,7 +85,10 @@ def evaluate_helper(error, seq_start_end):
 def evaluate(args, loader, generator, num_samples):
     ade_outer, fde_outer = [], []
     total_traj = 0
+    start_event = torch.cuda.Event(enable_timing=True)
+    end_event = torch.cuda.Event(enable_timing=True)
     with torch.no_grad():
+        start_event.record()
         for batch in loader:
             batch = [tensor.cuda() for tensor in batch]
             (obs_traj, obs_sel_state, obs_traffic,             
@@ -101,9 +120,13 @@ def evaluate(args, loader, generator, num_samples):
 
             ade_outer.append(ade_sum)
             fde_outer.append(fde_sum)
+
         ade = sum(ade_outer) / (total_traj * args.pred_len)
         fde = sum(fde_outer) / (total_traj)
-        return ade, fde
+        end_event.record()
+    torch.cuda.synchronize()
+    time_taken=start_event.elapsed_time(end_event)
+    return ade, fde, time_taken
 
 def main(args):
     if os.path.isdir(args.model_path):
@@ -122,10 +145,11 @@ def main(args):
         _args = AttrDict(checkpoint['args'])
         path = get_dset_path(_args.dataset_name, args.dset_type)
         _, loader = data_loader(_args, path)
-        ade, fde = evaluate(_args, loader, generator, args.num_samples)
+        ade, fde, time_taken = evaluate(_args, loader, generator, args.num_samples)
         print('Loaded ckpt path: {}'.format(ckpt_path))
         print('Dataset: {}, Pred Len: {}, ADE: {:.2f}, FDE: {:.2f}'.format(
             _args.dataset_name, _args.pred_len, ade, fde))
+        print(f"Elapsed time on GPU: {time_taken} * 1e-3 seconds")
 
 
 if __name__ == '__main__':
