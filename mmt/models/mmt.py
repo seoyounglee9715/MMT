@@ -99,9 +99,9 @@ class StateEncoder(nn.Module):
         if state_type == 1:
             state_size = 4
         elif state_type == 2:
-            state_size = 2
-        elif state_type == 3:
             state_size = 3
+        elif state_type == 3:
+            state_size = 2
         elif state_type == 4:
             state_size = 1 
         print(f"state_size:{state_size}")
