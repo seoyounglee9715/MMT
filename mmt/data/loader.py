@@ -8,7 +8,7 @@ def data_loader(args, path):
         path,
         state_version=args.state_type, # default=2, type=int
         obs_len=args.obs_len,
-        pred_len=args.pred_len,
+        pred_len= 8, # args.pred_len, # 4, 8, 12
         skip=args.skip,
         delim=args.delim)
 
