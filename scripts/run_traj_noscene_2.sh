@@ -36,7 +36,8 @@ python train_noscene_2.py \
   --num_samples_check 5000 \
   --clipping_threshold_d 0 \
   --skip 1 \
-  --obs_len 8 \
+  --obs_len 12 \
+  --pred_len 12 \
   --loader_num_workers 0 \
   --state_type 2 \
 

@@ -29,14 +29,14 @@ python train.py \
   --clipping_threshold_g 0 \
   --best_k 1 \
   --gpu_num 1 \
-  --checkpoint_name scene_state2_231129_1 \
+  --checkpoint_name scene_state_v2 \
   --restore_from_checkpoint 1 \
   --timing 0 \
   --use_gpu 1 \
   --num_samples_check 5000 \
   --clipping_threshold_d 0 \
   --skip 1 \
-  --obs_len 8 \
+  --obs_len 4 \
   --loader_num_workers 0 \
   --state_type 2 \
 

@@ -2,7 +2,6 @@ python train_noscene_3.py \
   --dataset_name 'waterloo' \
   --delim '\t' \
   --d_type 'local' \
-  --pred_len 8 \
   --encoder_h_dim_g 64 \
   --encoder_h_dim_d 64\
   --decoder_h_dim 128 \
@@ -36,7 +35,8 @@ python train_noscene_3.py \
   --num_samples_check 5000 \
   --clipping_threshold_d 0 \
   --skip 1 \
-  --obs_len 8 \
+  --obs_len 12 \
+  --pred_len 12 \
   --loader_num_workers 0 \
   --state_type  \ 0
 
