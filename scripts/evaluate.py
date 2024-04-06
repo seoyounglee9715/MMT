@@ -21,10 +21,11 @@ from mmt.models.mmt import TrajectoryGenerator # traffic model 불러오기
 from mmt.utils import relative_to_abs, get_dset_path
 
 parser = argparse.ArgumentParser()
-parser.add_argument('--model_path', default=os.getcwd() + '/with_scene/state2', type=str)
+# parser.add_argument('--model_path', default=os.getcwd() + '/with_scene/state_v4/240315/1', type=str)
+parser.add_argument('--model_path', default=os.getcwd() + '/with_scene/state_v2/240315/1', type=str)
 parser.add_argument('--num_samples', default=20, type=int)
 parser.add_argument('--dset_type', default='test', type=str)
-parser.add_argument('--state_type', default=2, type=int) # v0: no state, v1: acc+speed_ang, v2: acc, v3: acc+ang, v4: speed
+parser.add_argument('--state_type', default=2, type=int) # v0: no state, v1: acc1+acc2+speed+ang, v2: acc1+acc2+speed, v3: acc1+acc2+ang, v4: speed
 
 
 def get_generator(checkpoint):
@@ -66,10 +67,15 @@ def evaluate_helper(error, seq_start_end):
         sum_ += _error
     return sum_
 
+
+
 def evaluate(args, loader, generator, num_samples):
     ade_outer, fde_outer = [], []
     total_traj = 0
+    start_event = torch.cuda.Event(enable_timing=True)
+    end_event = torch.cuda.Event(enable_timing=True)
     with torch.no_grad():
+        start_event.record()
         for batch in loader:
             batch = [tensor.cuda() for tensor in batch]
             (obs_traj, obs_sel_state, obs_traffic,             
@@ -103,7 +109,10 @@ def evaluate(args, loader, generator, num_samples):
             fde_outer.append(fde_sum)
         ade = sum(ade_outer) / (total_traj * args.pred_len)
         fde = sum(fde_outer) / (total_traj)
-        return ade, fde
+        end_event.record()
+    torch.cuda.synchronize()
+    time_taken=start_event.elapsed_time(end_event)
+    return ade, fde, time_taken
 
 def main(args):
     if os.path.isdir(args.model_path):
@@ -117,14 +126,16 @@ def main(args):
 
     for path in paths:
         checkpoint = torch.load(path)
+        ckpt_path=path
         generator = get_generator(checkpoint)
         _args = AttrDict(checkpoint['args'])
         path = get_dset_path(_args.dataset_name, args.dset_type)
         _, loader = data_loader(_args, path)
-        ade, fde = evaluate(_args, loader, generator, args.num_samples)
-        print('Loaded ckpt path: {}'.format(path))
+        ade, fde, time_taken = evaluate(_args, loader, generator, args.num_samples)
+        print('Loaded ckpt path: {}'.format(ckpt_path))
         print('Dataset: {}, Pred Len: {}, ADE: {:.2f}, FDE: {:.2f}'.format(
             _args.dataset_name, _args.pred_len, ade, fde))
+        print(f"Elapsed time on GPU: {time_taken} * 1e-3 seconds")
 
 
 if __name__ == '__main__':

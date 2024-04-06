@@ -21,7 +21,8 @@ from mmt.models.mmt_noscene_3 import TrajectoryGenerator # traffic model 불러�
 from mmt.utils import relative_to_abs, get_dset_path
 
 parser = argparse.ArgumentParser()
-parser.add_argument('--model_path', default=os.getcwd() + '/output_noscene_3/4', type=str)
+parser.add_argument('--model_path', default=os.getcwd() + '/output_noscene_3/test', type=str)
+# parser.add_argument('--model_path', default=os.getcwd() + '/obs_12/wo_scene_3/state_v2/2', type=str)
 parser.add_argument('--num_samples', default=20, type=int)
 parser.add_argument('--dset_type', default='test', type=str)
 parser.add_argument('--state_type', default=0, type=int) # v0: no state, v1: acc+speed_ang, v2: acc, v3: acc+ang, v4: speed
@@ -31,7 +32,7 @@ def get_generator(checkpoint):
     args = AttrDict(checkpoint['args'])
     generator = TrajectoryGenerator(
         obs_len=args.obs_len,
-        pred_len=args.pred_len,
+        pred_len= 12, # args.pred_len,
         state_type=args.state_type,
         embedding_dim=args.embedding_dim,
         encoder_h_dim=args.encoder_h_dim_g,
@@ -117,12 +118,13 @@ def main(args):
 
     for path in paths:
         checkpoint = torch.load(path)
+        ckpt_path = path
         generator = get_generator(checkpoint)
         _args = AttrDict(checkpoint['args'])
         path = get_dset_path(_args.dataset_name, args.dset_type)
         _, loader = data_loader(_args, path)
         ade, fde = evaluate(_args, loader, generator, args.num_samples)
-        print('Loaded ckpt path: {}'.format(path))
+        print('Loaded ckpt path: {}'.format(ckpt_path))
         print('Dataset: {}, Pred Len: {}, ADE: {:.2f}, FDE: {:.2f}'.format(
             _args.dataset_name, _args.pred_len, ade, fde))
 
