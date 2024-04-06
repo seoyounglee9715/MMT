@@ -106,7 +106,7 @@ parser.add_argument('--l2_loss_weight', default=0, type=float)
 parser.add_argument('--best_k', default=1, type=int)
 
 # Output
-parser.add_argument('--output_dir', default=os.getcwd() + '/output_noscene_3/240312')
+parser.add_argument('--output_dir', default=os.getcwd() + '/obs_12/wo_scene_3/state_v2/2')
 parser.add_argument('--print_every', default=5, type=int)
 parser.add_argument('--checkpoint_every', default=100, type=int)
 parser.add_argument('--checkpoint_name', default='ckpt_noscene_3')

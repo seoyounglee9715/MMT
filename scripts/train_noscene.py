@@ -53,7 +53,7 @@ logger = logging.getLogger(__name__)
 parser.add_argument('--dataset_name', default='waterloo', type=str)
 parser.add_argument('--delim', default='\t')
 parser.add_argument('--loader_num_workers', default=0, type=int) # 4
-parser.add_argument('--obs_len', default=8, type=int)
+parser.add_argument('--obs_len', default=12, type=int)
 parser.add_argument('--pred_len', default=8, type=int)
 parser.add_argument('--skip', default=1, type=int)
 
@@ -103,7 +103,7 @@ parser.add_argument('--l2_loss_weight', default=0, type=float)
 parser.add_argument('--best_k', default=1, type=int)
 
 # Output
-parser.add_argument('--output_dir', default=os.getcwd() + '/output_noscene/240312/3')
+parser.add_argument('--output_dir', default=os.getcwd() + '/obs_12/wo_scene_1/state_v2/2')
 parser.add_argument('--print_every', default=5, type=int)
 parser.add_argument('--checkpoint_every', default=100, type=int)
 parser.add_argument('--checkpoint_name', default='ckpt_noscene_1')

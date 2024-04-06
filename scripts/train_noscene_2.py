@@ -69,7 +69,7 @@ parser.add_argument('--num_layers', default=1, type=int)
 parser.add_argument('--dropout', default=0.0, type=float)
 parser.add_argument('--batch_norm', default=0, type=bool_flag)
 parser.add_argument('--mlp_dim', default=1024, type=int)
-parser.add_argument('--state_type', default=2, type=int) # v1: acc1+acc2+speed+ang, v2: acc1+acc2+speed, v3: acc1+acc2+ang, v4: speed
+parser.add_argument('--state_type', default=1, type=int) # v1: acc1+acc2+speed+ang, v2: acc1+acc2+speed, v3: acc1+acc2+ang, v4: speed
 
 # Generator Options
 parser.add_argument('--encoder_h_dim_g', default=64, type=int)
@@ -104,7 +104,7 @@ parser.add_argument('--l2_loss_weight', default=0, type=float)
 parser.add_argument('--best_k', default=1, type=int)
 
 # Output
-parser.add_argument('--output_dir', default=os.getcwd() + '/output_noscene_2/240312/3')
+parser.add_argument('--output_dir', default=os.getcwd() + '/obs_12/wo_scene_2/state_v2/2')
 parser.add_argument('--print_every', default=5, type=int)
 parser.add_argument('--checkpoint_every', default=100, type=int)
 parser.add_argument('--checkpoint_name', default='ckpt_noscene_2')

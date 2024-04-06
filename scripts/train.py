@@ -14,6 +14,21 @@ import torch.optim as optim
 
 import sys
 
+import random
+import numpy as np
+import torch
+
+seed = 2024
+deterministic = True
+
+random.seed(seed)
+np.random.seed(seed)
+torch.manual_seed(seed)
+torch.cuda.manual_seed_all(seed)
+if deterministic:
+	torch.backends.cudnn.deterministic = True
+	torch.backends.cudnn.benchmark = False
+
 # _path = os.path.dirname(__file__)
 _path = os.getcwd()
 _path = _path.split("/")[:-1]
@@ -43,7 +58,7 @@ logger = logging.getLogger(__name__)
 parser.add_argument('--dataset_name', default='waterloo', type=str)
 parser.add_argument('--delim', default='\t')
 parser.add_argument('--loader_num_workers', default=0, type=int) # 4
-parser.add_argument('--obs_len', default=8, type=int)
+parser.add_argument('--obs_len', default=4, type=int)
 parser.add_argument('--pred_len', default=8, type=int)
 parser.add_argument('--skip', default=1, type=int)
 
@@ -58,7 +73,7 @@ parser.add_argument('--num_layers', default=1, type=int)
 parser.add_argument('--dropout', default=0.0, type=float)
 parser.add_argument('--batch_norm', default=0, type=bool_flag)
 parser.add_argument('--mlp_dim', default=1024, type=int)
-parser.add_argument('--state_type', default=2, type=int) # v1: acc+speed_ang, v2: acc, v3: acc+ang, v4: speed
+parser.add_argument('--state_type', default=2, type=int) # v1: acc1+acc2+speed+ang, v2: acc1+acc2+speed, v3: acc1+acc2+ang, v4: speed
 
 # Generator Options
 parser.add_argument('--encoder_h_dim_g', default=64, type=int)
@@ -93,10 +108,10 @@ parser.add_argument('--l2_loss_weight', default=0, type=float)
 parser.add_argument('--best_k', default=1, type=int)
 
 # Output
-parser.add_argument('--output_dir', default=os.getcwd() + '/with_scene/state2_231129_2')
+parser.add_argument('--output_dir', default=os.getcwd() + '/obs_4/wo_scene_1/state_v2')
 parser.add_argument('--print_every', default=5, type=int)
 parser.add_argument('--checkpoint_every', default=100, type=int)
-parser.add_argument('--checkpoint_name', default='231129_1')
+parser.add_argument('--checkpoint_name', default='scene_state_v2')
 parser.add_argument('--checkpoint_start_from', default=None)
 parser.add_argument('--restore_from_checkpoint', default=1, type=int)
 parser.add_argument('--num_samples_check', default=5000, type=int)
