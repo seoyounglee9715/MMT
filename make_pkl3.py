@@ -105,4 +105,31 @@ for i in range(len(dir_num)):
     # train_dset은 index를 통해 이미지를 tensor로 변경하여 출력 
     train_dset, _ = img_loader(args, train_path) # train_dset은 ImageDataset, train_loader는 DataLoader
 
+    # train_dset은 index를 통해 이미지를 tensor로 변경하여 출력한다. 
+
+    # preprocess = transforms.Compose([
+    #     transforms.Resize(256), # 이미지 크기 변경
+    #     transforms.CenterCrop(224), # 중앙 부분을 잘라서 크기 조절
+    #     transforms.ToTensor(), # tensor.Tensor 형식으로 변경 [0, 255] ->  [0,1]
+    # ])
+
+    for k in range(len_file):
+        image_tensor_list.append((train_dset[k]).unsqueeze(0)) # 전처리 # torch.Size([1, 3, 360, 640])
+    print("------------------------------------------------------------")
+    print(f"directory : {dir_num[i]} | original image_tensor done")
+    print("------------------------------------------------------------")
+
+    for j in range(len_file):        
+        image_feature_list.append(resnet(image_tensor_list[j]))# .squeeze(0)) # squeeze 
+        pkl_store_name = all_files[j].split(sep='/')[-1].split(sep='.jpg')[0]+'.pkl'
+        pkl_store_path = os.path.join(data_dir, pkl_store_name)
+
+        with open(pkl_store_path, 'wb') as f:
+
+            pk.dump(image_feature_list[j],f, protocol=4) #
+
+    print(f"directory {dir_num[i]} | image_feature .pkl file saved")
+    print("==========================================================")
+    print("==========================================================")
+
     
