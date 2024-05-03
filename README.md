@@ -18,6 +18,6 @@ All code was developed and tested on Ubuntu 20.04 wuth python 3.7 and PyTorch 1.
 ## Dataset
 [Waterloo multi-agent traffic dataset: intersection](https://uwaterloo.ca/waterloo-intelligent-systems-engineering-lab/datasets/waterloo-multi-agent-traffic-dataset-intersection)
 
-## Acknowlledgement
+## Acknowledgement
 
 Thanks for the model structure idea and code from [sgan](https://github.com/agrimgupta92/sgan), [d2-tpred](https://github.com/VTP-TL/D2-TPred) 
