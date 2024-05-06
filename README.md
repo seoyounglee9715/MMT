@@ -3,6 +3,13 @@
 ## Setup
 All code was developed and tested on Ubuntu 20.04 wuth python 3.7 and PyTorch 1.13.0.
 
+## Data
+[waterloo]
+* location: mmt/datasets/waterloo/~
+* [preprocessed data link](https://drive.google.com/drive/folders/1ygmCgEKaCdofBHC0nkbMqbiUk6yUqu0q)
+  - img folder: image raw, image feature file(.pkl) 
+  - train2, val2, test2 foler: trajectory, agent state, traffic light informatiln(.txt)
+    
 ## Pretrained Models
 [google drive](https://drive.google.com/drive/folders/1tSFcgzGzLxBCV8Fb6uLeQNBQzvCkONoh?usp=drive_link)
 
